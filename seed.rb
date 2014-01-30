@@ -19,6 +19,7 @@ def seed
 	data['strike'].each do |strike|
 		# create slugs
 		['country', 'location', 'town'].each do |s|
+			strike[s] = "- none -" if strike[s].nil? or strike[s].empty?
 			strike["#{s}_slug"] = sluggify(strike[s]) if strike[s]
 		end
 		strikes.insert strike
