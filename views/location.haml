@@ -1,0 +1,8 @@
+%h1= "#{country_link(@location)} / #{@location['location']}"
+
+= haml :strikes_table
+
+%h2 Towns
+%ul
+	- @towns.each do |town|
+		%li= town_link(town)

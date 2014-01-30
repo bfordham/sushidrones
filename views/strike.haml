@@ -1,0 +1,7 @@
+%h1= "#{@strike['number']}: #{strike_headline(@strike)}"
+
+%table
+	- @strike.keys.each do |k|
+		%tr
+			%th= k
+			%td= @strike[k]

@@ -1,0 +1,8 @@
+%h1= @country['name']
+
+= haml :strikes_table
+
+%h2 Locations
+%ul
+	- @locations.each do |location|
+		%li= location_link(location)
