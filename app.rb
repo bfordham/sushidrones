@@ -1,5 +1,9 @@
-require 'bundler'
-Bundler.require
+require 'sinatra'
+require 'sinatra-contrib'
+require 'bson_ext'
+require 'mongoid'
+require 'json'
+require 'haml'
 
 # load the Database and User model
 require './models'
