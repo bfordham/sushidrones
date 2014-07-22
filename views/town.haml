@@ -1,3 +1,7 @@
-%h1= "#{country_link(@town)} / #{location_link(@town)} / #{@town['town']}"
+%h1= "#{country_link(@country)} / #{location_link(@country, @location)} / #{@town}"
 
 = haml :strikes_table
+
+#mapdiv(style="width:50%;height:50%")
+
+%script{:type => "text/javascript", :src  => "#{town_url(@country, @location, @town)}.js"}

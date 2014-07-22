@@ -1,7 +1,20 @@
-%h1= "#{@strike['number']}: #{strike_headline(@strike)}"
+%h1= "#{@strike.number}: #{@strike.headline}"
 
-%table
-	- @strike.keys.each do |k|
-		%tr
-			%th= k
-			%td= @strike[k]
+#date
+	= @strike.format_date
+
+#summary
+	%p= @strike.bij_summary_short
+
+
+	- if @strike.target
+		Target for this strike is not known
+	- else
+		= @strike.target
+	%p
+		For more information, see the 
+		%a{:href => @strike.bij_link} Bureau of Investigative Journalism Article.
+
+#mapdiv(style="width:50%;height:50%")
+
+%script{:type => "text/javascript", :src  => "/strikes/#{@strike.id}.js"}

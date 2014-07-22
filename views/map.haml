@@ -1,0 +1,19 @@
+#mapdiv(style="width:50%;height:50%")
+
+:javascript
+	function initialize() {
+		var strikeLatlng = new google.maps.LatLng(#{@strike.lat}, #{@strike.lon});
+		var mapOptions = {
+			center: strikeLatlng,
+			zoom: 8
+		};
+		map = new google.maps.Map(document.getElementById("mapdiv"), mapOptions);
+
+		var marker = new google.maps.Marker({
+			position: strikeLatlng,
+			map: map,
+			title: '#{@strike.headline}'
+		});
+
+	}
+	google.maps.event.addDomListener(window, 'load', initialize);

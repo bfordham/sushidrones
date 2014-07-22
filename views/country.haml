@@ -1,8 +1,12 @@
-%h1= @country['name']
+%h1= @country
 
 = haml :strikes_table
 
 %h2 Locations
 %ul
 	- @locations.each do |location|
-		%li= location_link(location)
+		%li= location_link(@country, location)
+
+#mapdiv(style="width:50%;height:50%")
+
+%script{:type => "text/javascript", :src  => "#{country_url(@country)}.js"}

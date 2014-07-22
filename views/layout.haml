@@ -1,10 +1,18 @@
 %html
 	%head
 		%title SushiDrones
+		%script{:type => "text/javascript",
+			:src  => "https://maps.googleapis.com/maps/api/js?key=#{GMAPS_API_KEY}"}
+		%script{:type => "text/javascript",
+			:src  => "/js/markerclusterer_packed.js"}
+		%script{:type => "text/javascript",
+			:src  => "/js/common.js"}
 	%body
 		= yield
 
 		#footer
-			%p
-				Data courtesy of 
-				%a(href="http://www.dronestre.am") Dronestre.am
+		%p
+			SushiDrones is part of Socialist Sushi, an experiment by Bryan Fordham
+			%br
+			Data courtesy of 
+			%a(href="http://www.dronestre.am") Dronestre.am

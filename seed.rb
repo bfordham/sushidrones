@@ -1,28 +1,56 @@
 require 'open-uri'
-require './db'
+require './models'
 require 'json'
 
+@mapping = {
+	'number' => 'n',
+	'country' => 'c',
+	'date' => 'dt',
+	'town' => 't',
+	'location' => 'l',
+	'deaths' => 'd',
+	'deaths_min' => 'dl',
+	'deaths_max' => 'du',
+	'civilians' => 'civ',
+	'injuries' => 'i',
+	'children' => 'kid',
+	'tweet_id' => 'tid',
+	'bureau_id' => 'bid',
+	'bij_summary_short' => 'bijs',
+	'bij_link' => 'bijl',
+	'target' => 'ta',
+	'lat' => 'lat',
+	'lon' => 'lon',
+	'articles' => 'art',
+	'names_list' => 'nm',
+}
+
 def sluggify(text)
-	text.downcase.gsub(' ', '+')
+	text.downcase.gsub(' ', '-')
 end
 
 def seed
-	db_connection = Database.new.connect
-	strikes = db_connection.collection('strikes')
-
 	puts "Removing current records."
-	strikes.remove
+	Strike.delete_all
 
 	puts "Getting data from dronestre.am"
 	data = JSON.parse open('http://api.dronestre.am/data').read
 	puts "Found #{data['strike'].count} strikes. Inserting..."
-	data['strike'].each do |strike|
+	data['strike'].each do |tmp|
+		# create attributes using mapping
+		attrs = {}
+		@mapping.each do |k,v|
+			attrs[v] = tmp[k]
+		end
+
 		# create slugs
 		['country', 'location', 'town'].each do |s|
-			strike[s] = "- none -" if strike[s].nil? or strike[s].empty?
-			strike["#{s}_slug"] = sluggify(strike[s]) if strike[s]
+			tmp[s] = "- none -" if tmp[s].blank?
+			attrs["#{s.first}s"] = sluggify(tmp[s]) if tmp[s]
 		end
-		strikes.insert strike
+		strike = Strike.new
+		strike.attributes = attrs
+		strike.save
 	end
 
 	puts "Done."

@@ -1,4 +1,3 @@
-%h1 Strikes
 %table
   %tr
     %th Number
@@ -7,7 +6,7 @@
     %th Date
   - @strikes.each do |strike|
     %tr
-      %td= strike_link strike
-      %td= strike_headline(strike)
-      %td= country_link(strike)
-      %td= strike['date']
+      %td= strike.link
+      %td= strike.headline
+      %td= strike.country_link
+      %td= strike.format_date

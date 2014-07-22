@@ -1,83 +1,133 @@
-require 'sinatra'
-require 'sinatra/contrib'
-require './db.rb'
-require './helpers.rb'
-require 'json'
-require 'haml'
+require 'bundler'
+Bundler.require
 
-configure do
-  set :db, Database.new().connect
-  set :strikes, settings.db.collection('strikes')
-end
+# load the Database and User model
+require './models'
+require './drone_helpers'
 
-before /.*/ do
-  if request.url.match(/.json$/)
-    request.accept.unshift('application/json')
-    request.path_info = request.path_info.gsub(/.json$/,'')
+class SushiDrones < Sinatra::Base
+  enable :sessions
+
+  configure :development do
+    register Sinatra::RespondWith
+    register Sinatra::Reloader
   end
-end
+
+  configure do
+    GMAPS_API_KEY="AIzaSyAVuun0eGe_crbBQlU90E8YOVazuBPN6OE"
+  end
+
+  use Rack::Logger
+
+  helpers DroneHelpers, Sinatra::JSON
+
+  before /.*/ do
+    if request.url.match(/.json$/)
+      request.accept.unshift('application/json')
+      request.path_info = request.path_info.gsub(/.json$/,'')
+    elsif request.url.match(/.js$/)
+      request.accept.unshift('application/javascript')
+      request.path_info = request.path_info.gsub(/.js$/,'')
+    end
+  end
+      
+  get '/' do
+    @strikes = Strike.all.sort(number:-1).limit(10)
+    haml :index
+  end
+
+  get '/about/?' do
+    @content = RDiscount.new( File.open("contents/about.md").read ).to_html
+    haml :about
+  end
+
+  get '/countries/?', :provides => [:html, :json] do
+    @countries = Strike.distinct(:country)
+
+    respond_to do |format|
+      format.json { json @countries }
+      format.html { haml :countries }
+    end
+  end
+
+  get '/countries/:country_slug/?' do
+    country_slug = params[:country_slug]
+    @strikes = Strike.where(country_slug: country_slug)
+    @country = @strikes.first.country
+    @locations = @strikes.distinct(:location)
+
+    respond_to do |format|
+      format.json { json @strikes }
+      format.html { haml :country }
+      format.js { js :strike_js }
+    end
+  end
+
+  get '/countries/:country_slug/:location_slug?' do
+    country_slug = params[:country_slug]
+    location_slug = params[:location_slug]
+    @strikes = Strike.where(country_slug: country_slug, location_slug: location_slug)
+    @country = @strikes.first.country
+    @location = @strikes.first.location
+    @towns = @strikes.distinct(:town)
+
+    respond_to do |format|
+      format.json { json @strikes }
+      format.html { haml :location }
+      format.js { js :strike_js }
+    end
+  end
+
+  get '/countries/:country_slug/:location_slug/:town_slug/?' do
+    country_slug = params[:country_slug]
+    location_slug = params[:location_slug]
+    town_slug = params[:town_slug]
+    @strikes = Strike.where(country_slug: country_slug, location_slug: location_slug, town_slug: town_slug)
+    @country = @strikes.first.country
+    @location = @strikes.first.location
+    @town = @strikes.first.town
+
+    respond_to do |format|
+      format.json { json @strikes }
+      format.html { haml :town }
+      format.js { js :strike_js }
+    end
+  end
+
+  get '/strikes/?' do
+    @strikes = Strike.all
+    respond_to do |format|
+      format.json { json @strikes }
+      format.html { haml :strikes }
+      format.js { js :strike_js }
+    end
+  end
+
+  get '/strikes/:id/?' do  
+    @strike = Strike.where(number: params[:id].to_i).first
+    self.respond_to do |format|
+      format.json { json @strike }
+      format.html {haml :strike }
+      format.js {@strikes = [@strike]; js :strike_js }
+    end
     
-get '/' do
-  haml :index
-end
-
-get '/countries/?', :provides => [:html, :json] do
-  @countries = []
-  settings.strikes.distinct('country').each do |c|
-    @countries << settings.strikes.find_one(:country => c)
   end
-  respond_to do |format|
-    format.json { JSON.pretty_generate(@countries) }
-    format.html { haml :countries }
+
+  get '/strikes/visible/?', provides: [:js] do
+    lat1 = params[:lat1]
+    lat2 = params[:lat2]
+    lon1 = params[:lon1]
+    lon2 = params[:lon2]
+
+    unless lat1.blank? or lat2.blank? or lat3.blank? or lat4.blank?
+      @visible = Strike.in_bounds(lat1, lon1, lat2, lon2)
+      haml :visible
+    end
   end
-end
 
-get '/countries/:country_slug/?' do
-  @country = find_by_slug params
-  @locations = find_locations(@country)
-  @strikes = find_strikes(country: @country['country'])
-
-  respond_to do |format|
-    format.json { JSON.pretty_generate(@strikes) }
-    format.html { haml :country }
+  protected
+  def js(template)
+    haml template, layout: false
   end
-end
-
-get '/countries/:country_slug/:location_slug?' do
-  @location = find_by_slug params
-  @strikes = find_strikes(country: @location['country'], location: @location['location'])
-  @towns = find_towns(@location)
-
-  respond_to do |format|
-    format.json { JSON.pretty_generate(@strikes) }
-    format.html { haml :location }
-  end
-end
-
-get '/countries/:country_slug/:location_slug/:town_slug/?' do
-  @town = find_by_slug params
-  @strikes = find_strikes(country: @town['country'], location: @town['location'], town: @town['town'])
-
-  respond_to do |format|
-    format.json { JSON.pretty_generate(@strikes) }
-    format.html { haml :town }
-  end
-end
-
-get '/strikes/?' do
-  @strikes = find_strikes
-  respond_to do |format|
-    format.json { JSON.pretty_generate(@strikes) }
-    format.html { haml :strikes }
-  end
-end
-
-get '/strikes/:id/?' do  
-  @strike = settings.strikes.find_one({:number => params[:id].to_i})
-  respond_to do |format|
-    format.json { JSON.pretty_generate(@strike) }
-    format.html {haml :strike }
-  end
-  
 end
 

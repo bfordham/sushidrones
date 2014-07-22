@@ -1,0 +1,11 @@
+production:
+  sessions:
+    default:
+      uri: <%= ENV['MONGOHQ_URL'] %>
+development:
+  sessions:
+    default:
+      database: drones
+      hosts:
+        - localhost:27017
+

@@ -1,1 +1,10 @@
-<a href="/strikes">SushiDrones</a>
+%h1
+	%a(href="/") SushiDrones
+
+%h2 Most Recent Strikes
+= haml :strikes_table
+%a(href="/strikes") View all strikes
+
+#mapdiv(style="width:50%;height:50%")
+
+%script{:type => "text/javascript", :src  => "/strikes.js"}
