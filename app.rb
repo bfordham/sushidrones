@@ -1,9 +1,5 @@
-require 'sinatra'
-require 'sinatra-contrib'
-require 'bson_ext'
-require 'mongoid'
-require 'json'
-require 'haml'
+require 'bundler'
+Bundler.require
 
 # load the Database and User model
 require './models'
@@ -13,11 +9,11 @@ class SushiDrones < Sinatra::Base
   enable :sessions
 
   configure :development do
-    register Sinatra::RespondWith
     register Sinatra::Reloader
   end
 
   configure do
+    register Sinatra::RespondWith
     GMAPS_API_KEY="AIzaSyAVuun0eGe_crbBQlU90E8YOVazuBPN6OE"
   end
 
