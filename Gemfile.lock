@@ -23,6 +23,7 @@ GEM
       tzinfo (~> 0.3.29)
     moped (1.5.2)
     multi_json (1.9.2)
+    newrelic_rpm (3.9.0.229)
     origin (1.1.0)
     rack (1.5.2)
     rack-protection (1.5.2)
@@ -52,6 +53,7 @@ DEPENDENCIES
   haml
   json
   mongoid
+  newrelic_rpm
   rdiscount
   sinatra
   sinatra-contrib

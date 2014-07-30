@@ -7,3 +7,5 @@ gem 'mongoid'
 gem 'json'
 gem 'haml'
 gem 'rdiscount'
+gem 'newrelic_rpm'
+

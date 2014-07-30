@@ -125,6 +125,10 @@ class SushiDrones < Sinatra::Base
     end
   end
 
+  get '/test' do
+    File.read('views/test.html')
+  end
+
   protected
   def js(template)
     haml template, layout: false

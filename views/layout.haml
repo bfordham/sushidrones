@@ -1,18 +1,21 @@
 %html
 	%head
 		%title SushiDrones
+		%script{type: "text/javascript", 
+			src: "https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"}
+		%script{type: "text/javascript", 
+			src: "http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"}
+		%script{type: "text/javascript", 
+			src: "http://ajax.cdnjs.com/ajax/libs/underscore.js/1.1.6/underscore-min.js"}
+		%script{type: "text/javascript", 
+			src: "http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.0/backbone-min.js"}
 		%script{:type => "text/javascript",
 			:src  => "https://maps.googleapis.com/maps/api/js?key=#{GMAPS_API_KEY}"}
 		%script{:type => "text/javascript",
 			:src  => "/js/markerclusterer_packed.js"}
 		%script{:type => "text/javascript",
 			:src  => "/js/common.js"}
+		%link{ rel:"stylesheet", href:'/css/style.css' }
+
 	%body
 		= yield
-
-		#footer
-		%p
-			SushiDrones is part of Socialist Sushi, an experiment by Bryan Fordham
-			%br
-			Data courtesy of 
-			%a(href="http://www.dronestre.am") Dronestre.am
