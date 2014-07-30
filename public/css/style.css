@@ -1,0 +1,30 @@
+body {
+	background-color: white;
+	margin: 0;
+	padding: 0;
+}
+
+#mapdiv {
+	padding: 0;
+	margin: 0;
+	width: 100%;
+	height: 100%
+}
+
+#cards {
+	position: absolute;
+	height: 100%;
+	top: 0;
+	right: 0;
+	max-width: 30%;
+}
+
+.card {
+	background-color: white;
+	overflow-y: scroll;
+}
+
+#strikes_table {
+	margin: 10px 10px 10px 10px;
+	height: 350px;
+}
