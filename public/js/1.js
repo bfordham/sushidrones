@@ -1,110 +1,51 @@
-var SushiDrones = {
-  Models: {},
-  Collections: {},
-  Views: {},
-  Templates:{},
-};
+function Strike(attributes)
+{
+    attributes = attributes ? attributes : {};
+    this.attributes = attributes;
+    this.visible = true;
+}
 
-$(function(){
+Strike.prototype = {
+    get: function(key)
+    {
+        return this.attributes[key];
+    },
 
-    SushiDrones.Models.Strike = Backbone.Model.extend({
-      idAttribute: '_id',
+    set: function(key, value)
+    {
+        this.attributes[key] = value;
+    },
 
-      headline: function() {
-        return this.get('d') + " people killed in " + this.get('t');
-      },
+    visibleOnMap: function()
+    {
+        return true;
+    },
 
-      marker: function()
-      {
+    marker: function()
+    {
         if (!this._marker)
         {
             this._marker = new google.maps.Marker({'position': new google.maps.LatLng(this.get('lat'), this.get('lon'))});
         }
         return this._marker;
+    },
 
-      },
+    show: function(markerCollection)
+    {
+        // check if div exists
+        //make sure div is showing
+        // check that marker exists in map
+        // show marker
+    },
 
-      isActive: function()
-      {
-        return this._active;
-      }
-    });
+    hide: function(markerCollection)
+    {
+        //if div exists, hide it
 
-    SushiDrones.Collections.Strikes = Backbone.Collection.extend({
-        model: SushiDrones.Models.Strike,
-        url: "/strikes.json",
-        initialize: function(){
-            console.log("Strikes initialize")
-        }
-    });
+        // if marker exists, hide it
+    }
+};
 
-    //SushiDrones.Templates.strikes = _.template("<div id=\"strikes\"></div>");
-    console.log('before');
-    SushiDrones.Templates.strikes = _.template($('#strikes-template').html());
-    console.log('after');
+$(function(){
 
-    SushiDrones.Views.Strikes = Backbone.View.extend({
-        el: $("#content"),
-        template: SushiDrones.Templates.strikes,
-      
-        initialize: function () {
-            _.bindAll(this, "render", "addOne", "addAll");
-            this.collection.bind("sync", this.render);
-            this.collection.bind("add", this.addOne);
-        },
-      
-        render: function () {
-            console.log("render")
-            console.log(this.collection.length);
-            $(this.el).html(this.template());
-            this.addAll();
-        },
-      
-        addAll: function () {
-            console.log("addAll")
-            this.collection.each(this.addOne);
-        },
-      
-        addOne: function (model) {
-            console.log("addOne")
-            view = new SushiDrones.Views.Strike({ model: model });
-            $(this.el).append(view.render());
-        }
-      
-    })
-
-    SushiDrones.Templates.strike = _.template($('#strike-template').html());
-
-    SushiDrones.Views.Strike = Backbone.View.extend({
-        tagName: "li",
-        template: SushiDrones.Templates.strike,
-      
-        initialize: function () {
-            _.bindAll(this, 'render');
-        },
-      
-        render: function () {
-            //return this.template(this.model.toJSON());
-             
-            //Correction
-            return $(this.el).append(this.template(this.model.toJSON())) ;
-        }
-    })
-
-    SushiDrones.Router = Backbone.Router.extend({
-        routes: {
-            "": "defaultRoute"
-        },
-      
-        defaultRoute: function () {
-            console.log("defaultRoute");
-            SushiDrones.strikes = new SushiDrones.Collections.Strikes();
-            SushiDrones.view = new SushiDrones.Views.Strikes({ collection: SushiDrones.strikes });
-            SushiDrones.strikes.fetch();
-            console.log(SushiDrones.strikes.length)
-        }
-    })
-     
-    var appRouter = new SushiDrones.Router();
-    Backbone.history.start();
 });
