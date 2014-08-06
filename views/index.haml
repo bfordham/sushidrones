@@ -1,7 +1,29 @@
 #mapdiv
 
-/#cards
-/	=haml :strikes_table
+#cards
+	#strikes.card
+		Strikes
+		.scrolling
+			Loading...
+		#strike_menu
+			%a.zoomAll{href: '#'}
+				Zoom All
+			%a.showAll{href: '#'}
+				Show All
+			%a.about{href: '/about'}
+				About
 
+<script type="text/template" id="strike-template">
+<div class="strike item" id="strike-<%= n %>">
+<h3><%= d %> people killed in <%= t %></h3>
+<div class="strike-date"><%= dt %></div>
+<div class="strike-location">
+<a href="#" data-location="<%= c %>" class="filter"><%= c %></a> &gt; 
+<a href="#" data-location="<%= c %>,<%= l %>" class="filter"><%= l %></a> &gt;
+<a href="#" data-location="<%= c %>,<%= l %>,<%= t %>" class="filter"><%= t %>
+</div>
+<hr />
+</div>
+</script>
 
 %script{:type => "text/javascript", :src  => "/strikes.js"}

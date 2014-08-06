@@ -1,3 +1,5 @@
+html, body { height: 100%; }
+
 body {
 	background-color: white;
 	margin: 0;
@@ -12,19 +14,71 @@ body {
 }
 
 #cards {
+	filter: none;
 	position: absolute;
-	height: 100%;
 	top: 0;
-	right: 0;
-	max-width: 30%;
+	transition: filter 200ms cubic-bezier(0.52, 0, 0.48, 1) 0s;
+	z-index: 4;
 }
 
 .card {
-	background-color: white;
-	overflow-y: scroll;
+	margin: 15px 15px 15px 30px;
+	left: 0;
+	position: absolute;
+	top: 0;
+	transition: left 0.5s ease 0s;
+	z-index: 10;
+    clip: rect(-10px, 428px, 382px, -10px);
+    height: 350px;
+    top: 4px;
+    z-index: 1;
+    color: #666;
+    background: none repeat scroll 0 0 #fff;
+    border-radius: 2px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    box-sizing: border-box;
+    font-size: 12px;
+    line-height: 16px;
+    outline: medium none;
+    overflow: hidden;
+    position: absolute;
+    transition: background-color 200ms cubic-bezier(0.52, 0, 0.48, 1) 0s;
+    width: 370px;
+}
+
+.scrolling {
+    display: block;
+    margin-right: 2px;
+    max-height: 300px;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 #strikes_table {
 	margin: 10px 10px 10px 10px;
 	height: 350px;
+}
+
+.item {
+	position: relative;
+	line-height: 16px;
+	padding: 6px 0;
+}
+
+.item h3 {
+	color: #333;
+    font-size: 16px;
+    font-weight: normal;
+    line-height: normal;
+}
+
+.item hr {
+	margin-bottom: 0;
+	background: none repeat scroll 0 0 #e6e6e6;
+	border: medium none;
+	height: 1px;
+}
+
+a.about {
+	float: right;
 }
