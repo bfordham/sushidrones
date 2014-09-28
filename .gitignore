@@ -1,0 +1,5 @@
+*.rbc
+.rspec
+.rvmrc
+/log/*
+/tmp/*
