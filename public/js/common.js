@@ -97,6 +97,9 @@ function StrikeCollection(options)
             });
         }
     }
+    var foo = this;
+
+    $(document).bind('sushiDronesFiltered', function(e) {foo.setHeading(e);});
 
     this.fetch();
 };
@@ -132,6 +135,8 @@ StrikeCollection.prototype = {
         }
 
         $('a.filter').click(function(e){ foo.filterClick(e); return false; });
+
+        this.raiseRendered();
     },
 
     _eachStrike: function(i,s)
@@ -175,13 +180,14 @@ StrikeCollection.prototype = {
             }
         );
         this.markerCluster.addMarkers(this.getVisibleMarkers());
+
+        this.raiseRendered(options);
     },
 
     filterClick: function(e)
     {
-        console.log("!");
         e.preventDefault();
-        options = {};
+        var options = {};
 
         var l = $(e.currentTarget);
         loc = l.data('location');
@@ -212,6 +218,11 @@ StrikeCollection.prototype = {
         return all;
     },
 
+    getMarkerCount: function()
+    {
+        return this.markerCluster.getTotalMarkers();
+    },
+
     zoomAll: function()
     {
         if (this.strikes.length == 1)
@@ -223,6 +234,26 @@ StrikeCollection.prototype = {
         {
             this.markerCluster.fitMapToMarkers();
         }
+    },
+
+    setHeading: function(e)
+    {
+        var elem = $('#strikes > h1');
+
+        if (e.options)
+        {
+            elem.html('Filtered ');
+        }
+        else
+        {
+            elem.html('Strikes: ');
+        }
+        elem.append(this.getMarkerCount() + " of " + this.strikes.length);
+    },
+
+    raiseRendered: function(options)
+    {
+        $.event.trigger('sushiDronesFiltered', {options: options});
     }
 };
 
@@ -232,4 +263,6 @@ $(function(){
     SC = new StrikeCollection();
     $('a.zoomAll').click(function(e){e.preventDefault(); SC.zoomAll()});
     $('a.showAll').click(function(e){e.preventDefault(); SC.filter()});
+    $('a.collapse').click(function(e){e.preventDefault(); $('#strikes').addClass('collapsed')});
+    $('a.expand').click(function(e){e.preventDefault(); $('#strikes').removeClass('collapsed')});
 });

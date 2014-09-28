@@ -29,12 +29,13 @@ body {
 	transition: left 0.5s ease 0s;
 	z-index: 10;
     clip: rect(-10px, 428px, 382px, -10px);
-    height: 350px;
+    max-height: 350px;
     top: 4px;
     z-index: 1;
     color: #666;
-    background: none repeat scroll 0 0 #fff;
-    border-radius: 2px;
+    background: none repeat scroll 0 0 #9698AD;
+    -moz-border-radius: 15px;
+	border-radius: 15px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     box-sizing: border-box;
     font-size: 12px;
@@ -44,9 +45,27 @@ body {
     position: absolute;
     transition: background-color 200ms cubic-bezier(0.52, 0, 0.48, 1) 0s;
     width: 370px;
+    -moz-box-shadow: 10px 10px 5px #888;
+	-webkit-box-shadow: 10px 10px 5px #888;
+	box-shadow: 10px 10px 5px #888;
+}
+
+.card a {
+	color: #505478;
+}
+
+.card h1 {
+	color: #fff;
+    font-size: 16px;
+    font-weight: normal;
+    line-height: normal;
+    margin: 2px 0;
+	border-bottom: 1px solid #e6e6e6;
+	padding-left: 5px;
 }
 
 .scrolling {
+	background-color: #fff;
     display: block;
     margin-right: 2px;
     max-height: 300px;
@@ -62,7 +81,7 @@ body {
 .item {
 	position: relative;
 	line-height: 16px;
-	padding: 6px 0;
+	padding: 6px 3px;
 }
 
 .item h3 {
@@ -70,6 +89,7 @@ body {
     font-size: 16px;
     font-weight: normal;
     line-height: normal;
+    margin: 0;
 }
 
 .item hr {
@@ -77,6 +97,11 @@ body {
 	background: none repeat scroll 0 0 #e6e6e6;
 	border: medium none;
 	height: 1px;
+}
+
+#strike_menu {
+	border-top: 1px solid #e6e6e6;
+	padding: 0 8px 2px 8px;
 }
 
 a.about {
