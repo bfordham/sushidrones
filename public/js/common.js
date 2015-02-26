@@ -1,3 +1,9 @@
+function is_blank(obj)
+{
+  return obj == null || obj == '';
+
+}
+
 function Strike(attributes)
 {
   attributes = attributes ? attributes : {};
@@ -83,7 +89,7 @@ function StrikeCollection(options)
   this.mapDiv = options.mapDiv ? options.mapDiv : 'mapdiv';
   this.strikesURL = options.strikesURL ? options.strikesURL : '/strikes.json';
   this.strikes = null;
-  this.filter_params = null;
+  this._filter = null;
 
   if (this.mapDiv)
   {
@@ -101,6 +107,9 @@ function StrikeCollection(options)
   var foo = this;
 
   $(document).bind('sushiDronesFiltered', function(e) {foo.setHeading(e);});
+
+  // google.maps.event.addListener(this.map, 'dragend', function() { foo.onMove(); });
+  // google.maps.event.addListener(this.map, 'zoom_changed', function() { foo.onMove(); });
 
   this.fetch();
 };
@@ -168,27 +177,26 @@ StrikeCollection.prototype = {
     return this._templates[name];
   },
 
-  filter: function(options)
+  filter: function()
   {
-    options = options || null;
     var foo = this;
 
     this.markerCluster.clearMarkers();
     $(this.strikes).each(
       function(i,x)
       {
-        x.filter(options);
+        x.filter(foo._filter);
       }
     );
     this.markerCluster.addMarkers(this.getVisibleMarkers());
 
-    this.raiseRendered(options);
+    this.raiseRendered(this._filter);
   },
 
   filterClick: function(e)
   {
     e.preventDefault();
-    var options = {};
+    this._filter = {};
 
     var l = $(e.currentTarget);
     loc = l.data('location');
@@ -197,18 +205,19 @@ StrikeCollection.prototype = {
       var tmp = loc.split(',');
       if (tmp[0])
       {
-        options.c = tmp[0];
+        this._filter.c = tmp[0];
       }
       if (tmp[1])
       {
-        options.l = tmp[1];
+        this._filter.l = tmp[1];
       }
       if (tmp[2])
       {
-        options.t = tmp[2];
+        this._filter.t = tmp[2];
       }
     }
-    this.filter(options);
+    this.filter();
+    this.onMove();
   },
 
   getVisibleMarkers: function()
@@ -235,6 +244,15 @@ StrikeCollection.prototype = {
     {
       this.markerCluster.fitMapToMarkers();
     }
+
+    this.buildUrl(true);
+  },
+
+  showAll: function()
+  {
+    this._filter = null;
+    this.filter();
+    this.buildUrl();
   },
 
   setHeading: function(e)
@@ -255,6 +273,69 @@ StrikeCollection.prototype = {
   raiseRendered: function(options)
   {
     $.event.trigger('sushiDronesFiltered', {options: options});
+  },
+
+  getState: function()
+  {
+    return {lat: this.map.getCenter().lat(), lng: this.map.getCenter().lng(), zoom: this.map.getZoom(), filter: this._filter};
+  },
+
+  setState: function(data)
+  {
+    if (data != null)
+    {
+      this.map.setCenter(new google.maps.LatLng(data.lat, data.lng));
+      this.map.setZoom(data.zoom);
+      if (this._filter != data.filter)
+      {
+        this._filter = data.filter;
+        this.filter();
+      }
+    }
+    else
+    {
+      this.showAll();
+      this.zoomAll();
+    }
+
+  },
+
+  buildUrl: function(skipCoords)
+  {
+    var url = '/';
+
+    if (this._filter != null && !is_blank(this._filter.c))
+    {
+      url = url + this._filter.c;
+
+      if (!is_blank(this._filter.l))
+      {
+        url = url + "/" + this._filter.l;
+
+        if (!is_blank(this._filter.t))
+        {
+          url = url + "/" + this._filter.t;
+        }
+      }
+    }
+
+    if (!skipCoords)
+    {
+      url = url + "?c=" + this.map.getCenter().lat() + "," + this.map.getCenter().lng() +
+        "&z=" + this.map.getZoom();
+    }
+
+    return url.toLowerCase().split(' ').join('+');
+  },
+
+  onMove: function()
+  {
+    window.history.pushState(this.getState(), "", this.buildUrl());
+  },
+
+  onpopstate: function(event)
+  {
+    this.setState(event.state);
   }
 };
 
@@ -263,7 +344,12 @@ var SC;
 $(function(){
   SC = new StrikeCollection();
   $('a.zoomAll').click(function(e){e.preventDefault(); SC.zoomAll()});
-  $('a.showAll').click(function(e){e.preventDefault(); SC.filter()});
+  $('a.showAll').click(function(e){e.preventDefault(); SC.showAll()});
   $('a.collapse').click(function(e){e.preventDefault(); $('#strikes').addClass('collapsed')});
   $('a.expand').click(function(e){e.preventDefault(); $('#strikes').removeClass('collapsed')});
+
+  $(window).bind('popstate',  
+    function(event) {
+        SC.onpopstate(event.originalEvent);
+    });
 });

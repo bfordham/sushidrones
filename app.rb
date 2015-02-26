@@ -30,7 +30,7 @@ class SushiDrones < Sinatra::Base
       request.path_info = request.path_info.gsub(/.js$/,'')
     end
   end
-      
+
   get '/' do
     @strikes = Strike.all.sort(number:-1).limit(10)
     haml :index
@@ -46,7 +46,7 @@ class SushiDrones < Sinatra::Base
 
     respond_to do |format|
       format.json { json @countries }
-      format.html { haml :countries }
+      format.html { haml :index }
     end
   end
 
@@ -58,7 +58,7 @@ class SushiDrones < Sinatra::Base
 
     respond_to do |format|
       format.json { json @strikes }
-      format.html { haml :country }
+      format.html { haml :index }
       format.js { js :strike_js }
     end
   end
@@ -103,14 +103,14 @@ class SushiDrones < Sinatra::Base
     end
   end
 
-  get '/strikes/:id/?' do  
+  get '/strikes/:id/?' do
     @strike = Strike.where(number: params[:id].to_i).first
     self.respond_to do |format|
       format.json { json @strike }
       format.html {haml :strike }
       format.js {@strikes = [@strike]; js :strike_js }
     end
-    
+
   end
 
   get '/strikes/visible/?', provides: [:js] do
